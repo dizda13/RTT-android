@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView serverStatus;
     private EditText serverIp;
     private Button nazovi;
-    private Button serverMod;
     private Button connect;
     //private String line;
     // DEFAULT IP
@@ -34,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private MediaStreamServer mss;
     private MediaStreamClient msc;
     // DESIGNATE A PORT
-    public static final int SERVERPORT = 8080;
+    public static final int SERVERPORT = 8083;
+    public static final int SERVERPORT2 = 8087;
     boolean isRecording;
     ServerSocket sockfd;
     Socket connfd;
@@ -49,13 +49,18 @@ public class MainActivity extends AppCompatActivity {
 
         nazovi = (Button) findViewById(R.id.nazovi);
         serverIp = (EditText) findViewById(R.id.ipAdress);
-        serverMod = (Button) findViewById(R.id.serverMod);
+        //serverMod = (Button) findViewById(R.id.serverMod);
         connect = (Button) findViewById(R.id.connect);
         serverStatus=(TextView) findViewById(R.id.labela);
         nazovi.setOnTouchListener(nazoviL);
-        serverMod.setOnClickListener(listenPort);
+        //serverMod.setOnClickListener(listenPort);
         connect.setOnClickListener(sendRequest);
         isRecording=false;
+        new Thread(){
+            public void run(){
+                RunServer();
+            }
+        }.start();
     }
 
     private View.OnClickListener sendRequest=new View.OnClickListener() {
@@ -70,9 +75,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener listenPort=new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+
+        public void RunServer() {
             //Intent intent=new Intent(this, ServerActivity);
             try { sockfd = new ServerSocket(SERVERPORT); }
             catch (Exception e) {
@@ -83,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.sendBroadcast(intent);
                 return;
             }
-            new Thread() {
-               public void run() {
+
                     Log.v(TAG, "pocelo");
                     try {
                         connfd = sockfd.accept();
@@ -97,11 +100,8 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     Log.v(TAG, "Connected");
-                }
-            }.start();
 
         }
-    };
 
 
 

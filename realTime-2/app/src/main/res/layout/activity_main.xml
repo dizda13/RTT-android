@@ -46,20 +46,12 @@ android:clickable="false">
     android:layout_alignEnd="@+id/nazovi"
     android:layout_alignStart="@+id/nazovi" />
 
-<Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Server mod"
-    android:id="@+id/serverMod"
-    android:layout_below="@+id/ipAdress"
-    android:layout_alignStart="@+id/ipAdress" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connect"
         android:id="@+id/connect"
-        android:layout_below="@+id/serverMod"
-        android:layout_alignStart="@+id/nazovi" />
+        android:layout_alignStart="@+id/nazovi"
+        android:layout_below="@+id/ipAdress" />
 
 </RelativeLayout>
