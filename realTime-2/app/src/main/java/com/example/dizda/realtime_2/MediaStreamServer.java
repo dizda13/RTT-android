@@ -34,7 +34,6 @@ public class MediaStreamServer {
                     ctx.sendBroadcast(intent);
                     return;
                 }
-
                 try {
                     connfd = sockfd.accept();
                 } catch (Exception e) {
@@ -52,8 +51,6 @@ public class MediaStreamServer {
    /* public void send(final Context ctx){
         recBufSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, recBufSize);
-
-
         new Thread() {
             byte[] buffer = new byte[recBufSize];
             public void run() {
@@ -100,15 +97,15 @@ public class MediaStreamServer {
                     }
                 }
                 audioRecord.stop();
-                try { connfd.close(); }
-                catch (Exception e) { e.printStackTrace(); }
+                /*try { connfd.close(); }
+                catch (Exception e) { e.printStackTrace();}*/
             }
         }.start();
     }
 
     public void stop(ServerSocket sockfd) {
         isRecording = false;
-        try { sockfd.close(); }
-        catch (Exception e) { e.printStackTrace(); }
+        /*try { sockfd.close(); }
+        catch (Exception e) { e.printStackTrace(); }*/
     }
 }

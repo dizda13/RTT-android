@@ -89,8 +89,9 @@ public class MediaStreamClient {
                 isPlaying = true;
                 while (isPlaying) {
                     int readSize = 0;
-                    try { readSize = connfd.getInputStream().read(buffer); }
-                    catch (Exception e) {
+                    try {
+                        readSize = connfd.getInputStream().read(buffer);
+                    } catch (Exception e) {
                         e.printStackTrace();
                         Intent intent = new Intent()
                                 .setAction("tw.rascov.MediaStreamer.ERROR")
@@ -100,10 +101,13 @@ public class MediaStreamClient {
                     }
                     audioTrack.write(buffer, 0, readSize);
                 }
-                audioTrack.stop();
-                try { connfd.close(); }
-                catch (Exception e) { e.printStackTrace(); }
-            }
+                    audioTrack.stop();
+                    try {
+                        connfd.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
         }.start();
     }
 

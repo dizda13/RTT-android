@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         //serverMod.setOnClickListener(listenPort);
         connect.setOnClickListener(sendRequest);
         isRecording=false;
-        new Thread(){
+       new Thread(){
             public void run(){
                 RunServer();
             }
@@ -69,39 +69,39 @@ public class MainActivity extends AppCompatActivity {
             //Intent intent=new Intent(this, ServerActivity);
             SERVERIP = getLocalIpAddress();
             String ip=serverIp.getText().toString();
-            msc=new MediaStreamClient(MainActivity.this,ip,SERVERPORT);
+            msc=new MediaStreamClient(MainActivity.this,"192.168.2.106",SERVERPORT);
             /*msc=new MediaStreamClient(MainActivity.this,ip,SERVERPORT);
             msc.play(MainActivity.this);*/
         }
     };
 
 
-        public void RunServer() {
-            //Intent intent=new Intent(this, ServerActivity);
-            try { sockfd = new ServerSocket(SERVERPORT); }
-            catch (Exception e) {
-                e.printStackTrace();
-                Intent intent = new Intent()
-                        .setAction("tw.rascov.MediaStreamer.ERROR")
-                        .putExtra("msg", e.toString());
-                MainActivity.this.sendBroadcast(intent);
-                return;
-            }
-
-                    Log.v(TAG, "pocelo");
-                    try {
-                        connfd = sockfd.accept();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Intent intent = new Intent()
-                                .setAction("tw.rascov.MediaStreamer.ERROR")
-                                .putExtra("msg", e.toString());
-                        MainActivity.this.sendBroadcast(intent);
-                        return;
-                    }
-                    Log.v(TAG, "Connected");
-
+    public void RunServer() {
+        //Intent intent=new Intent(this, ServerActivity);
+        try { sockfd = new ServerSocket(SERVERPORT); }
+        catch (Exception e) {
+            e.printStackTrace();
+            Intent intent = new Intent()
+                    .setAction("tw.rascov.MediaStreamer.ERROR")
+                    .putExtra("msg", e.toString());
+            MainActivity.this.sendBroadcast(intent);
+            return;
         }
+
+        Log.v(TAG, "pocelo");
+        try {
+            connfd = sockfd.accept();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Intent intent = new Intent()
+                    .setAction("tw.rascov.MediaStreamer.ERROR")
+                    .putExtra("msg", e.toString());
+            MainActivity.this.sendBroadcast(intent);
+            return;
+        }
+        Log.v(TAG, "Connected");
+
+    }
 
 
 
