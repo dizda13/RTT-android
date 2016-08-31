@@ -56,11 +56,7 @@ public class MainActivity extends AppCompatActivity {
         //serverMod.setOnClickListener(listenPort);
         connect.setOnClickListener(sendRequest);
         isRecording=false;
-       new Thread(){
-            public void run(){
-                RunServer();
-            }
-        }.start();
+        msc=new MediaStreamClient(MainActivity.this);
     }
 
     private View.OnClickListener sendRequest=new View.OnClickListener() {
@@ -69,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             //Intent intent=new Intent(this, ServerActivity);
             SERVERIP = getLocalIpAddress();
             String ip=serverIp.getText().toString();
-            msc=new MediaStreamClient(MainActivity.this,"192.168.2.106",SERVERPORT);
+            //msc=new MediaStreamClient(MainActivity.this,"192.168.2.106",SERVERPORT);
             /*msc=new MediaStreamClient(MainActivity.this,ip,SERVERPORT);
             msc.play(MainActivity.this);*/
         }
@@ -111,9 +107,10 @@ public class MainActivity extends AppCompatActivity {
             // TODO Auto-generated method stub
             //String mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
             //mFileName += "/audiorecordtest.3gp";
+            String ip=serverIp.getText().toString();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    mss=new MediaStreamServer(MainActivity.this,connfd);
+                    mss=new MediaStreamServer(MainActivity.this,ip);
                     break;
                 case MotionEvent.ACTION_UP:
                     mss.stop(sockfd);

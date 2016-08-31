@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 
 public class MediaStreamClient {
     static final int frequency = 44100;
@@ -17,21 +18,13 @@ public class MediaStreamClient {
     boolean isPlaying;
     int playBufSize;
     Socket connfd;
+    ServerSocket sockfd;
     AudioTrack audioTrack;
+    private static final String TAG = "MyActivity";
+    public static final int SERVERPORT = 8083;
 
-   /* public MediaStreamClient(final Context ctx,final String ip,final int port){
-        try { connfd = new Socket(ip, port);  }
-        catch (Exception e) {
-            e.printStackTrace();
-            Intent intent = new Intent()
-                    .setAction("tw.rascov.MediaStreamer.ERROR")
-                    .putExtra("msg", e.toString());
-            ctx.sendBroadcast(intent);
-            return;
-        }
-    }*/
 
-    public void play(final Context ctx){
+    public MediaStreamClient(final Context ctx) {
         playBufSize=AudioTrack.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
         audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, frequency, channelConfiguration, audioEncoding, playBufSize, AudioTrack.MODE_STREAM);
         audioTrack.setStereoVolume(1f, 1f);
@@ -39,44 +32,7 @@ public class MediaStreamClient {
         new Thread() {
             byte[] buffer = new byte[playBufSize];
             public void run() {
-                audioTrack.play();
-                isPlaying = true;
-                while (isPlaying) {
-                    try {
-                        if(connfd.getInputStream().available()==0) {
-                            int readSize = 0;
-                            try {
-                                readSize = connfd.getInputStream().read(buffer);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Intent intent = new Intent()
-                                        .setAction("tw.rascov.MediaStreamer.ERROR")
-                                        .putExtra("msg", e.toString());
-                                ctx.sendBroadcast(intent);
-                                break;
-                            }
-                            audioTrack.write(buffer, 0, readSize);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                audioTrack.stop();
-                try { connfd.close(); }
-                catch (Exception e) { e.printStackTrace(); }
-            }
-        }.start();
-    }
-
-    public MediaStreamClient(final Context ctx, final String ip, final int port) {
-        playBufSize=AudioTrack.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
-        audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, frequency, channelConfiguration, audioEncoding, playBufSize, AudioTrack.MODE_STREAM);
-        audioTrack.setStereoVolume(1f, 1f);
-
-        new Thread() {
-            byte[] buffer = new byte[playBufSize];
-            public void run() {
-                try { connfd = new Socket(ip, port); }
+                try { sockfd = new ServerSocket(SERVERPORT); }
                 catch (Exception e) {
                     e.printStackTrace();
                     Intent intent = new Intent()
@@ -85,29 +41,44 @@ public class MediaStreamClient {
                     ctx.sendBroadcast(intent);
                     return;
                 }
-                audioTrack.play();
-                isPlaying = true;
-                while (isPlaying) {
-                    int readSize = 0;
+                while(true) {
+                    Log.v(TAG, "pocelo");
                     try {
-                        readSize = connfd.getInputStream().read(buffer);
+                        connfd = sockfd.accept();
                     } catch (Exception e) {
                         e.printStackTrace();
                         Intent intent = new Intent()
                                 .setAction("tw.rascov.MediaStreamer.ERROR")
                                 .putExtra("msg", e.toString());
                         ctx.sendBroadcast(intent);
-                        break;
                     }
-                    audioTrack.write(buffer, 0, readSize);
-                }
+                    Log.v(TAG, "Connected");
+                    audioTrack.play();
+                    isPlaying = true;
+                    while (isPlaying) {
+                        int readSize = 0;
+                        try {
+                            readSize = connfd.getInputStream().read(buffer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Intent intent = new Intent()
+                                    .setAction("tw.rascov.MediaStreamer.ERROR")
+                                    .putExtra("msg", e.toString());
+                            ctx.sendBroadcast(intent);
+                            break;
+                        }
+                        audioTrack.write(buffer, 0, readSize);
+                    }
                     audioTrack.stop();
+                    audioTrack.release();
                     try {
                         connfd.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+
+            }
         }.start();
     }
 
